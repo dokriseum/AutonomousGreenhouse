@@ -17,7 +17,7 @@
 #define maxValueTemp 30.5
 #define maxValueAirHumidity 35
 #define maxValueSoilHumidity 267
-#define sensorSoilHumidityDry 400 // 595 // value for dry sensor
+#define sensorSoilHumidityDry 595 // 595 // value for dry sensor
 #define sensorSoilHumidityWet 239 // value for wet sensor
 #define valueRefresh 256
 /**
@@ -25,10 +25,11 @@
  */
  
 int zahler;
-float humi;
-float tempC;
-float tempF;
+float valueAirHumidity;
+float valueTempCelsius;
+float valueTempFahrenheit;
 int valueSoilHumidity;
+int valuePercentageSoilHumididy;
 
 /**
  * 
@@ -46,25 +47,27 @@ void setup()
   pinMode(LED_BUILTIN, OUTPUT);
   dht.begin(); // initialize the sensor
   zahler = 1;
-  humi = 0;
-  tempC = 0;
-  tempF = 0;
+  valueAirHumidity = 0;
+  valueTempCelsius = 0;
+  valueTempFahrenheit = 0;
   valueSoilHumidity = 0;
+  valuePercentageSoilHumididy = 0;
 }
 
-void readTempSoilHumidity()
+void readTempAirHumidity()
 {
   // read humidity
-  humi = dht.readHumidity();
+  valueAirHumidity = dht.readHumidity();
   // read temperature as Celsius
-  tempC = dht.readTemperature();
+  valueTempCelsius = dht.readTemperature();
   // read temperature as Fahrenheit
-  tempF = dht.readTemperature(true);
+  valueTempFahrenheit = dht.readTemperature(true);
 }
 
-void readAirHumidity()
+void readSoilHumidity()
 {
   valueSoilHumidity = analogRead(pinSoilHumidity); // Auslesen des aktuellen Sensorwertes
+  valuePercentageSoilHumididy = map(valueSoilHumidity, sensorSoilHumidityWet, sensorSoilHumidityDry, 100, 0); 
 }
 
 void checkZahler()
@@ -97,7 +100,7 @@ void printSerial()
 {
 
   // check if any reads failed
-  if (isnan(humi) || isnan(tempC) || isnan(tempF))
+  if (isnan(valueAirHumidity) || isnan(valueTempCelsius) || isnan(valueTempFahrenheit))
   {
     Serial.println("Failed to read from DHT sensor!");
   }
@@ -113,20 +116,22 @@ void printSerial()
 
     Serial.print("Soil Humidity: ");
     Serial.print(valueSoilHumidity);
-    Serial.print("");
+    Serial.print(" / ");
+    Serial.print(valuePercentageSoilHumididy);
+    Serial.print("%");
 
     Serial.print("  |  ");
 
     Serial.print("Air Humidity: ");
-    Serial.print(humi);
+    Serial.print(valueAirHumidity);
     Serial.print("%");
 
     Serial.print("  |  ");
 
     Serial.print("Temperature: ");
-    Serial.print(tempC);
+    Serial.print(valueTempCelsius);
     Serial.print("°C ~ ");
-    Serial.print(tempF);
+    Serial.print(valueTempFahrenheit);
     Serial.println("°F");
   }
 }
@@ -136,8 +141,8 @@ void loop()
 {
   delay(valueRefresh); // kurze Pause
 
-  readAirHumidity();
-  readTempSoilHumidity();
+  readSoilHumidity();
+  readTempAirHumidity();
 
   // 267 Bodenfeuchtigkeit
   if (valueSoilHumidity >= sensorSoilHumidityDry)
