@@ -100,6 +100,7 @@ void printSerial()
 {
 
   // check if any reads failed
+  //The function isnan() returns 1 if the argument \a __x represents a "not-a-number" (NaN) object, otherwise 0.
   if (isnan(valueAirHumidity) || isnan(valueTempCelsius) || isnan(valueTempFahrenheit))
   {
     Serial.println("Failed to read from DHT sensor!");
