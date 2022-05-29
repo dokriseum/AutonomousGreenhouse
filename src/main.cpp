@@ -9,6 +9,7 @@
 #define DHTPIN 2
 #define DHTTYPE DHT11
 #define pinSoilHumidity A0
+const int RELAY_PIN = A5;
 
 /**
  * vordefinierte statische Werte
@@ -30,6 +31,7 @@ float valueTempCelsius;
 float valueTempFahrenheit;
 int valueSoilHumidity;
 int valuePercentageSoilHumididy;
+int sensorSoilHumidityDryTest;
 
 /**
  * 
@@ -45,6 +47,7 @@ void setup()
   // Add your initialization code here
   Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(RELAY_PIN, OUTPUT);
   dht.begin(); // initialize the sensor
   zahler = 1;
   valueAirHumidity = 0;
@@ -52,6 +55,7 @@ void setup()
   valueTempFahrenheit = 0;
   valueSoilHumidity = 0;
   valuePercentageSoilHumididy = 0;
+  sensorSoilHumidityDryTest = 400;
 }
 
 void readTempAirHumidity()
@@ -140,22 +144,24 @@ void printSerial()
 // The loop function is called in an endless loop
 void loop()
 {
+  
   delay(valueRefresh); // kurze Pause
 
   readSoilHumidity();
   readTempAirHumidity();
 
   // 267 Bodenfeuchtigkeit
-  if (valueSoilHumidity >= sensorSoilHumidityDry)
+  if (valueSoilHumidity >= sensorSoilHumidityDryTest)
   {
     digitalWrite(LED_BUILTIN, HIGH);
+    digitalWrite(RELAY_PIN, HIGH);
   }
   else
   {
     digitalWrite(LED_BUILTIN, LOW);
+    digitalWrite(RELAY_PIN, LOW);
   }
 
   printSerial();
   checkZahler();
-
 }
