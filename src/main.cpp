@@ -9,7 +9,7 @@
 #define DHTPIN 2
 #define DHTTYPE DHT11
 #define pinSoilHumidity A0
-const int RELAY_PIN = A5;
+const int RELAY_PIN = A7;
 
 /**
  * vordefinierte statische Werte
