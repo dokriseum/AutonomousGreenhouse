@@ -15,7 +15,7 @@
 #define pinSoilHumidity A0
 #define RELAY_PIN A7
 
-LiquidCrystal_I2C lcd(0x27, 16, 2); // I2C address 0x27, 20 column and 4 rows
+LiquidCrystal_I2C lcd(0x27, 20, 4); // I2C address 0x27, 20 column and 4 rows
 
 /**
  * vordefinierte statische Werte
@@ -55,7 +55,7 @@ void displaySetup()
 {
   iColumn = 2;
   iRow = 1;
-  //lcd.begin(20, 4);
+  // lcd.begin(20, 4);
   lcd.init(); // initialize the lcd
   // Print a message to the LCD.
   lcd.backlight();
@@ -64,9 +64,10 @@ void displaySetup()
   // lcd.setCursor(1, 2);
   // lcd.print("HUMI");
   lcd.clear();
-  lcd.setCursor(4, 0);
-  lcd.print("Hackster");
-  Serial.println("Hackster");
+  // lcd.setCursor(4, 0);
+  // lcd.print("Hackster");
+  // Serial.println("Hackster");
+  lcd.blink_off();
 }
 
 void scannerSetup()
@@ -91,7 +92,7 @@ void setup()
   valuePercentageSoilHumididy = 0;
   sensorSoilHumidityDryTest = 400;
   displaySetup();
-  //scannerSetup();
+  // scannerSetup();
   Serial.println("!!! FINISH !!!");
 }
 
@@ -187,16 +188,31 @@ void printSerial()
     Serial.print("°C ~ ");
     Serial.print(valueTempFahrenheit);
     Serial.println("°F");
+
+    lcd.clear();
+    lcd.noBlink();
+    lcd.setCursor(0, 0);
+    lcd.print("Temp: ");
+    lcd.print(valueTempCelsius);
+    lcd.print(" C");
+
+    lcd.setCursor(0, 1);
+    lcd.print("Temp: ");
+    lcd.print(valueTempFahrenheit);
+    lcd.print(" F");
+
+    lcd.setCursor(0, 2);
+    lcd.print("Boden: ");
+    lcd.print(valueSoilHumidity);
+
+    lcd.setCursor(0, 3);
+    lcd.print("Luft: ");
+    lcd.print(valueAirHumidity);
+    lcd.noBlink();
+    //lcd.setCursor(0, 0);
   }
 }
 
-void displayLoop()
-{
-  lcd.blink();
-  lcd.setCursor(iColumn, iRow);
-  lcd.print("H");
-  Serial.println("displayLoop()");
-}
 
 void scannerLoop()
 {
@@ -262,14 +278,14 @@ void productivityLoop()
 
   printSerial();
   checkZahler();
-  // displayLoop();
+  //displayLoop();
 }
 
 // The loop function is called in an endless loop
 void loop()
 {
-  //scannerLoop();
-  //productivityLoop();
+  // scannerLoop();
+  productivityLoop();
 }
 
 /**
