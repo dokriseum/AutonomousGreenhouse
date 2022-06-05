@@ -14,7 +14,6 @@
 #define DHTTYPE DHT11
 #define pinSoilHumidity A0
 #define RELAY_PIN A7
-
 LiquidCrystal_I2C lcd(0x27, 20, 4); // I2C address 0x27, 20 column and 4 rows
 
 /**
