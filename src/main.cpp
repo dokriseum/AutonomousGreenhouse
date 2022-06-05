@@ -10,11 +10,15 @@
 #include "DHT.h"
 #include <LiquidCrystal_I2C.h> // Library for LCD
 #include <EEPROM.h>
+
 #define DHTPIN 2
 #define DHTTYPE DHT11
 #define pinSoilHumidity A0
 #define RELAY_PIN A7
 LiquidCrystal_I2C lcd(0x27, 20, 4); // I2C address 0x27, 20 column and 4 rows
+
+byte Celsius[8] = {B11100, B10100, B11100, B0000, B00000, B00000, B00000, B00000};
+byte Heart[8] = {B01010, B11111, B01110, B00100, B00000, B00000, B00000, B00000};
 
 /**
  * vordefinierte statische Werte
@@ -66,7 +70,8 @@ void displaySetup()
   // lcd.setCursor(4, 0);
   // lcd.print("Hackster");
   // Serial.println("Hackster");
-  lcd.blink_off();
+  lcd.createChar(0, Celsius);
+  lcd.createChar(1, Heart);
 }
 
 void scannerSetup()
@@ -189,29 +194,33 @@ void printSerial()
     Serial.println("°F");
 
     lcd.clear();
-    lcd.noBlink();
     lcd.setCursor(0, 0);
     lcd.print("Temp: ");
     lcd.print(valueTempCelsius);
-    lcd.print(" C");
+    lcd.write((uint8_t)0);
+    lcd.print("C");
 
     lcd.setCursor(0, 1);
     lcd.print("Temp: ");
     lcd.print(valueTempFahrenheit);
-    lcd.print(" F");
+    lcd.write((uint8_t)0);
+    lcd.print("F");
 
     lcd.setCursor(0, 2);
     lcd.print("Boden: ");
     lcd.print(valueSoilHumidity);
+    lcd.print(" | ");
+    lcd.print(valuePercentageSoilHumididy);
+    lcd.print("%");
 
     lcd.setCursor(0, 3);
     lcd.print("Luft: ");
     lcd.print(valueAirHumidity);
+    lcd.print("%");
     lcd.noBlink();
-    //lcd.setCursor(0, 0);
+    //lcd.autoscroll();
   }
 }
-
 
 void scannerLoop()
 {
@@ -277,7 +286,6 @@ void productivityLoop()
 
   printSerial();
   checkZahler();
-  //displayLoop();
 }
 
 // The loop function is called in an endless loop
@@ -286,14 +294,3 @@ void loop()
   // scannerLoop();
   productivityLoop();
 }
-
-/**
- *
-    Serial.print("\"valueSoilHumidity >= sensorSoilHumidityDryTest\" :: ");
-    Serial.print("valueSoilHumidity: ");
-    Serial.print(valueSoilHumidity);
-    Serial.print(" | --- | ");
-    Serial.print("sensorSoilHumidityDryTest: ");
-    Serial.print(sensorSoilHumidityDryTest);
-    Serial.println("");
- */
