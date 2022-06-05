@@ -13,8 +13,10 @@
 
 #define DHTPIN 2
 #define DHTTYPE DHT11
+#define pinFan 3
 #define pinSoilHumidity A0
 #define RELAY_PIN A7
+#define RELAY_PIN_FAN A6
 LiquidCrystal_I2C lcd(0x27, 20, 4); // I2C address 0x27, 20 column and 4 rows
 
 byte Celsius[8] = {B11100, B10100, B11100, B0000, B00000, B00000, B00000, B00000};
@@ -41,6 +43,7 @@ float valueTempFahrenheit;
 int valueSoilHumidity;
 int valuePercentageSoilHumididy;
 int sensorSoilHumidityDryTest;
+int valueSpeedFan;
 
 int iColumn;
 int iRow;
@@ -87,6 +90,8 @@ void setup()
   Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(RELAY_PIN, OUTPUT);
+  pinMode(RELAY_PIN_FAN, OUTPUT);
+  pinMode(pinFan, OUTPUT);
   dht.begin(); // initialize the sensor
   zahler = 1;
   valueAirHumidity = 0;
@@ -218,7 +223,7 @@ void printSerial()
     lcd.print(valueAirHumidity);
     lcd.print("%");
     lcd.noBlink();
-    //lcd.autoscroll();
+    // lcd.autoscroll();
   }
 }
 
@@ -264,6 +269,17 @@ void scannerLoop()
   */
 }
 
+void fan(){
+  valueSpeedFan = 1;
+  Serial.println(valueSpeedFan);
+  analogWrite(pinFan, HIGH);
+  delay(5000);
+  valueSpeedFan = 0;
+  Serial.println(valueSpeedFan);
+  analogWrite(pinFan, LOW);
+  delay(5000);
+}
+
 void productivityLoop()
 {
 
@@ -276,16 +292,19 @@ void productivityLoop()
   {
     digitalWrite(LED_BUILTIN, HIGH);
     digitalWrite(RELAY_PIN, HIGH);
+    digitalWrite(RELAY_PIN_FAN, HIGH);
   }
   else
   {
     digitalWrite(LED_BUILTIN, LOW);
     digitalWrite(RELAY_PIN, LOW);
+    digitalWrite(RELAY_PIN_FAN, LOW);
     lcd.backlight();
   }
 
   printSerial();
   checkZahler();
+  fan();
 }
 
 // The loop function is called in an endless loop
