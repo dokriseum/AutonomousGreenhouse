@@ -65,16 +65,8 @@ void displaySetup()
   lcd.init(); // initialize the lcd
   // Print a message to the LCD.
   lcd.backlight();
-  // lcd.setCursor(1, 1);
-  // lcd.print("TEMP");
-  // lcd.setCursor(1, 2);
-  // lcd.print("HUMI");
   lcd.clear();
-  // lcd.setCursor(4, 0);
-  // lcd.print("Hackster");
-  // Serial.println("Hackster");
   lcd.createChar(0, Celsius);
-  lcd.createChar(1, Heart);
 }
 
 void scannerSetup()
@@ -304,7 +296,6 @@ void productivityLoop()
 
   printSerial();
   checkZahler();
-  fan();
 }
 
 // The loop function is called in an endless loop
