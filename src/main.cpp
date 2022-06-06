@@ -46,6 +46,12 @@ int valueSpeedFan;
 
 int iColumn;
 int iRow;
+int xPrintTemp;
+int yPrintTemp;
+int xPrintAirHumidity;
+int yPrintAirHumidity;
+int xPrintSoilHumidity;
+int yPrintSoilHumidity;
 
 /**
  *
@@ -60,6 +66,12 @@ void displaySetup()
 {
   iColumn = 2;
   iRow = 1;
+  xPrintTemp = 0;
+  yPrintTemp = 0;
+  xPrintSoilHumidity = 0;
+  yPrintSoilHumidity = 1;
+  xPrintAirHumidity = 0;
+  yPrintAirHumidity = 2;
   // lcd.begin(20, 4);
   lcd.init(); // initialize the lcd
   // Print a message to the LCD.
@@ -187,34 +199,58 @@ void printSerial()
     Serial.print("°C ~ ");
     Serial.print(valueTempFahrenheit);
     Serial.println("°F");
-
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Temp: ");
-    lcd.print(valueTempCelsius);
-    lcd.write((uint8_t)0);
-    lcd.print("C");
-
-    lcd.setCursor(0, 1);
-    lcd.print("Temp: ");
-    lcd.print(valueTempFahrenheit);
-    lcd.write((uint8_t)0);
-    lcd.print("F");
-
-    lcd.setCursor(0, 2);
-    lcd.print("Boden: ");
-    lcd.print(valueSoilHumidity);
-    lcd.print(" | ");
-    lcd.print(valuePercentageSoilHumididy);
-    lcd.print("%");
-
-    lcd.setCursor(0, 3);
-    lcd.print("Luft: ");
-    lcd.print(valueAirHumidity);
-    lcd.print("%");
-    lcd.noBlink();
-    // lcd.autoscroll();
   }
+}
+
+void printTemp(int x, int y)
+{
+  if (isnan(valueAirHumidity) || isnan(valueTempCelsius) || isnan(valueTempFahrenheit))
+  {
+    lcd.setCursor(x, y);
+    lcd.print("Failed to read from DHT sensor!");
+    lcd.autoscroll();
+  }
+  lcd.setCursor(x, y);
+  lcd.print("T: ");
+  lcd.print(valueTempCelsius, 1);
+  lcd.write((uint8_t)0);
+  lcd.print("C");
+  lcd.print("|");
+  lcd.print(valueTempFahrenheit);
+  lcd.write((uint8_t)0);
+  lcd.print("F");
+  // lcd.autoscroll();
+}
+
+void printAirHumidity(int x, int y)
+{
+  if (isnan(valueAirHumidity) || isnan(valueTempCelsius) || isnan(valueTempFahrenheit))
+  {
+    lcd.setCursor(x, y);
+    lcd.print("Failed to read from DHT sensor!");
+    lcd.autoscroll();
+  }
+  lcd.setCursor(x, y);
+  lcd.print("A: ");
+  lcd.print(valueAirHumidity);
+  lcd.print("%");
+  lcd.noBlink();
+}
+
+void printSoilHumidity(int x, int y)
+{
+  if (isnan(valueSoilHumidity))
+  {
+    lcd.setCursor(x, y);
+    lcd.print("Failed to read from soil humidity sensor!");
+    lcd.autoscroll();
+  }
+  lcd.setCursor(x, y);
+  lcd.print("S: ");
+  lcd.print(valueSoilHumidity);
+  lcd.print(" | ");
+  lcd.print(valuePercentageSoilHumididy);
+  lcd.print("%");
 }
 
 void scannerLoop()
@@ -265,6 +301,9 @@ void productivityLoop()
   delay(valueRefresh); // kurze Pause
   readSoilHumidity();
   readTempAirHumidity();
+  printAirHumidity(xPrintAirHumidity, yPrintAirHumidity);
+  printSoilHumidity(xPrintSoilHumidity, yPrintSoilHumidity);
+  printTemp(xPrintTemp, yPrintTemp);
 
   // 267 Bodenfeuchtigkeit
   if (valueSoilHumidity >= sensorSoilHumidityDryTest)
@@ -278,10 +317,13 @@ void productivityLoop()
     digitalWrite(RELAY_PIN, LOW);
   }
 
-  //lueften
-  if ((valueAirHumidity>=75) || (valueTempCelsius>=40)) {
+  // lueften
+  if ((valueAirHumidity >= 75) || (valueTempCelsius >= 40))
+  {
     digitalWrite(RELAY_PIN_FAN, HIGH);
-  } else {
+  }
+  else
+  {
     digitalWrite(RELAY_PIN_FAN, LOW);
   }
 
