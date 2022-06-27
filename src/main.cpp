@@ -14,7 +14,7 @@
 #define DHTPIN 2
 #define DHTTYPE DHT11
 #define pinSoilHumidity A0
-#define RELAY_PIN A7
+#define RELAY_PIN_PUMP A7
 #define RELAY_PIN_FAN A6
 LiquidCrystal_I2C lcd(0x27, 20, 4); // I2C address 0x27, 20 column and 4 rows
 
@@ -28,7 +28,7 @@ byte Heart[8] = {B01010, B11111, B01110, B00100, B00000, B00000, B00000, B00000}
 #define maxValueTemp 30.5
 #define maxValueAirHumidity 35
 #define maxValueSoilHumidity 267
-#define sensorSoilHumidityDry 595 // 595 // value for dry sensor
+#define sensorSoilHumidityDry 400 // 595 // value for dry sensor
 #define sensorSoilHumidityWet 239 // value for wet sensor
 #define valueRefresh 1000
 /**
@@ -92,7 +92,7 @@ void setup()
   // Add your initialization code here
   Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(RELAY_PIN, OUTPUT);
+  pinMode(RELAY_PIN_PUMP, OUTPUT);
   pinMode(RELAY_PIN_FAN, OUTPUT);
   dht.begin(); // initialize the sensor
   zahler = 1;
@@ -166,12 +166,14 @@ void printSerial()
 
   // check if any reads failed
   // The function isnan() returns 1 if the argument \a __x represents a "not-a-number" (NaN) object, otherwise 0.
+  /**
   if (isnan(valueAirHumidity) || isnan(valueTempCelsius) || isnan(valueTempFahrenheit))
   {
     Serial.println("Failed to read from DHT sensor!");
   }
   else
   {
+    */
     addZeros();
 
     Serial.print(zahler);
@@ -199,17 +201,21 @@ void printSerial()
     Serial.print("°C ~ ");
     Serial.print(valueTempFahrenheit);
     Serial.println("°F");
+    /**
   }
+  **/
 }
 
 void printTemp(int x, int y)
 {
+  /**
   if (isnan(valueAirHumidity) || isnan(valueTempCelsius) || isnan(valueTempFahrenheit))
   {
     lcd.setCursor(x, y);
     lcd.print("Failed to read from DHT sensor!");
     lcd.autoscroll();
   }
+  **/
   lcd.setCursor(x, y);
   lcd.print("T: ");
   lcd.print(valueTempCelsius, 1);
@@ -224,12 +230,14 @@ void printTemp(int x, int y)
 
 void printAirHumidity(int x, int y)
 {
+  /**
   if (isnan(valueAirHumidity) || isnan(valueTempCelsius) || isnan(valueTempFahrenheit))
   {
     lcd.setCursor(x, y);
     lcd.print("Failed to read from DHT sensor!");
     lcd.autoscroll();
   }
+  **/
   lcd.setCursor(x, y);
   lcd.print("A: ");
   lcd.print(valueAirHumidity);
@@ -239,12 +247,14 @@ void printAirHumidity(int x, int y)
 
 void printSoilHumidity(int x, int y)
 {
+  /**
   if (isnan(valueSoilHumidity))
   {
     lcd.setCursor(x, y);
     lcd.print("Failed to read from soil humidity sensor!");
     lcd.autoscroll();
   }
+  **/
   lcd.setCursor(x, y);
   lcd.print("S: ");
   lcd.print(valueSoilHumidity);
@@ -309,12 +319,12 @@ void productivityLoop()
   if (valueSoilHumidity >= sensorSoilHumidityDry)
   {
     digitalWrite(LED_BUILTIN, HIGH);
-    digitalWrite(RELAY_PIN, HIGH);
+    digitalWrite(RELAY_PIN_PUMP, HIGH);
   }
   else
   {
     digitalWrite(LED_BUILTIN, LOW);
-    digitalWrite(RELAY_PIN, LOW);
+    digitalWrite(RELAY_PIN_PUMP, LOW);
   }
 
   // lueften
