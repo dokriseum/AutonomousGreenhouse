@@ -104,6 +104,7 @@ void setup()
   sensorSoilHumidityDryTest = 400;
   displaySetup();
   // scannerSetup();
+  digitalWrite(RELAY_PIN_PUMP, LOW);
   Serial.println("!!! FINISH !!!");
 }
 
@@ -320,6 +321,11 @@ void productivityLoop()
   {
     digitalWrite(LED_BUILTIN, HIGH);
     digitalWrite(RELAY_PIN_PUMP, HIGH);
+  }
+  else if (valueSoilHumidity < sensorSoilHumidityDry)
+  {
+    digitalWrite(LED_BUILTIN, LOW);
+    digitalWrite(RELAY_PIN_PUMP, LOW);
   }
   else
   {
