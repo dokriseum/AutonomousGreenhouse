@@ -215,7 +215,7 @@ void printTemp(int x, int y)
   lcd.print(valueTempCelsius, 1);
   lcd.write((uint8_t)0);
   lcd.print("C");
-  lcd.print("|");
+  lcd.print(" | ");
   lcd.print(valueTempFahrenheit);
   lcd.write((uint8_t)0);
   lcd.print("F");
@@ -306,7 +306,7 @@ void productivityLoop()
   printTemp(xPrintTemp, yPrintTemp);
 
   // 267 Bodenfeuchtigkeit
-  if (valueSoilHumidity >= sensorSoilHumidityDryTest)
+  if (valueSoilHumidity >= sensorSoilHumidityDry)
   {
     digitalWrite(LED_BUILTIN, HIGH);
     digitalWrite(RELAY_PIN, HIGH);
