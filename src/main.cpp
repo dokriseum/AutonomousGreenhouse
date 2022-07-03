@@ -1,24 +1,17 @@
-/**
- * Blink
- *
- * Turns on an LED on for one second,
- * then off for one second, repeatedly.
- */
+#include <Wire.h> // für die serielle Schnittstelle des I2C-Moduls
+#include "Arduino.h" // Standardbibliothek für Arduino
+#include "DHT.h" // für den DHT11-Sensor
+#include <LiquidCrystal_I2C.h> // Bibliothek für LCD 2004
 
-#include <Wire.h>
-#include "Arduino.h"
-#include "DHT.h"
-#include <LiquidCrystal_I2C.h> // Library for LCD
-#include <EEPROM.h>
-
-#define DHTPIN 2
-#define DHTTYPE DHT11
-#define pinSoilHumidity A0
-#define RELAY_PIN_PUMP A7
-#define RELAY_PIN_FAN A6
+#define DHTPIN 2 // DHT11 am digitalen Pin 2
+#define DHTTYPE DHT11 // Auswahl ob DHT11 oder DHT22
+#define pinSoilHumidity A0 // analoger Pin für den Bodenfeuchtesensor
+#define RELAY_PIN_PUMP A7 // analoger Pin für Relais zur Wasserpumpe
+#define RELAY_PIN_FAN A6 // analoger Pin für Relais zum Lüfter
 LiquidCrystal_I2C lcd(0x27, 20, 4); // I2C address 0x27, 20 column and 4 rows
 
 byte Celsius[8] = {B11100, B10100, B11100, B0000, B00000, B00000, B00000, B00000};
+
 byte Heart[8] = {B01010, B11111, B01110, B00100, B00000, B00000, B00000, B00000};
 
 /**
@@ -28,9 +21,9 @@ byte Heart[8] = {B01010, B11111, B01110, B00100, B00000, B00000, B00000, B00000}
 #define maxValueTemp 30.5
 #define maxValueAirHumidity 35
 #define maxValueSoilHumidity 267
-#define sensorSoilHumidityDry 400 // 595 // value for dry sensor
-#define sensorSoilHumidityWet 239 // value for wet sensor
-#define valueRefresh 1000
+#define sensorSoilHumidityDry 400 // (max 595) Wert für trockenen Boden
+#define sensorSoilHumidityWet 239 // Wert für ausreichend nassen Boden
+#define valueRefresh 1000 // für den Pausenwert (delay) zwischen den Anzeigen
 /**
  * festgelegte einstellbare Werte
  */
@@ -121,7 +114,7 @@ void readTempAirHumidity()
 void readSoilHumidity()
 {
   valueSoilHumidity = analogRead(pinSoilHumidity); // Auslesen des aktuellen Sensorwertes
-  valuePercentageSoilHumididy = map(valueSoilHumidity, sensorSoilHumidityWet, sensorSoilHumidityDry, 100, 0);
+  valuePercentageSoilHumididy = map(valueSoilHumidity, sensorSoilHumidityWet, sensorSoilHumidityDry, 100, 0); // Angabe als Prozentwert
 }
 
 void checkZahler()
@@ -195,7 +188,7 @@ void printSerial()
     Serial.print(valueAirHumidity);
     Serial.print("%");
 
-    Serial.print("  |  ");
+    Seria300.print("  |  ");
 
     Serial.print("Temperature: ");
     Serial.print(valueTempCelsius);
@@ -321,11 +314,6 @@ void productivityLoop()
   {
     digitalWrite(LED_BUILTIN, HIGH);
     digitalWrite(RELAY_PIN_PUMP, HIGH);
-  }
-  else if (valueSoilHumidity < sensorSoilHumidityDry)
-  {
-    digitalWrite(LED_BUILTIN, LOW);
-    digitalWrite(RELAY_PIN_PUMP, LOW);
   }
   else
   {
